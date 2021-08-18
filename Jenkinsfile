@@ -1,12 +1,21 @@
-node('GOL'){
-    stage('scm'){
-        git 'https://github.com/Pruthviraj-Panda/openmrs-core.git'
+pipeline{
+    agent {label'GOL'}
+    stages{
+        stage('scm'){
+            steps{
+                git branch: 'master', url: 'https://github.com/Pruthviraj-Panda/openmrs-core.git'
+            }
+        }
+        stage('build'){
+            steps{
+                sh 'mvn package'
+            }
+        }
     }
-    stage('build'){
-        sh 'mvn package'
-    }
-    stage('postbuild'){
-        junit '**/TEST-*.xml'
-        archive '**/*.war'
+    post{
+        success{
+            archive '**/*.war'
+            junit '**/TEST-*.xml'
+        }
     }
 }
